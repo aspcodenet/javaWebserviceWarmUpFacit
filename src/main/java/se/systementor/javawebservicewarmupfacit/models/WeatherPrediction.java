@@ -1,23 +1,20 @@
-package se.systementor.webservicejavadag1.models;
+package se.systementor.javawebservicewarmupfacit.models;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class WeatherPrediction {
     private UUID id;
-    private LocalDateTime created;
-    private LocalDateTime updated;
-    private float longitude;
-    private float latitude;
-    private int predictionDatum; //20230616
-    private int predictionHour; //8
-    private int predictionTemperature;
-    private boolean rainOrSnow;
-    private ApiProvider apiProvider;
+    private int date;
+    private int hour;
 
+    private float temperature;
     public WeatherPrediction(UUID id) {
         this.id = id;
-        this.created = LocalDateTime.now();
+    }
+
+    public String SortOrder(){
+        return String.valueOf( date) + hour;
     }
 
     public WeatherPrediction() {
@@ -32,79 +29,30 @@ public class WeatherPrediction {
         this.id = id;
     }
 
-    public LocalDateTime getCreated() {
-        return created;
+
+
+
+    public float getTemperature() {
+        return temperature;
     }
 
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
+    public void setTemperature(float temperature) {
+        this.temperature = temperature;
     }
 
-    public float getLongitude() {
-        return longitude;
+    public int getDate() {
+        return date;
     }
 
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
+    public void setDate(int date) {
+        this.date = date;
     }
 
-    public float getLatitude() {
-        return latitude;
+    public int getHour() {
+        return hour;
     }
 
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
-    }
-
-    public int getPredictionDatum() {
-        return predictionDatum;
-    }
-
-    public void setPredictionDatum(int predictionDatum) {
-        this.predictionDatum = predictionDatum;
-    }
-
-    public int getPredictionHour() {
-        return predictionHour;
-    }
-
-    public void setPredictionHour(int predictionHour) {
-        this.predictionHour = predictionHour;
-    }
-
-    public int getPredictionTemperature() {
-        return predictionTemperature;
-    }
-
-    public void setPredictionTemperature(int predictionTemperature) {
-        this.predictionTemperature = predictionTemperature;
-    }
-
-    public boolean isRainOrSnow() {
-        return rainOrSnow;
-    }
-
-    public void setRainOrSnow(boolean rainOrSnow) {
-        this.rainOrSnow = rainOrSnow;
-    }
-
-    public ApiProvider getApiProvider() {
-        return apiProvider;
-    }
-
-    public void setApiProvider(ApiProvider apiProvider) {
-        this.apiProvider = apiProvider;
-    }
-
-    public int SORT_HOUR(WeatherPrediction weatherPrediction) {
-        return weatherPrediction.predictionHour;
-    }
-
-    public LocalDateTime getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(LocalDateTime updated) {
-        this.updated = updated;
+    public void setHour(int hour) {
+        this.hour = hour;
     }
 }
