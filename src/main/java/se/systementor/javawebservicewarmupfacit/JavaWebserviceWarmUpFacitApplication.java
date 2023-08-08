@@ -5,12 +5,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import se.systementor.javawebservicewarmupfacit.models.WeatherPrediction;
 
+import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import se.systementor.javawebservicewarmupfacit.models.funtranslations.Example;
 
 @SpringBootApplication
 public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
@@ -23,6 +27,7 @@ public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        demo();
         var scan = new Scanner(System.in);
         while(true){
             showHeaderMenu();
@@ -32,6 +37,17 @@ public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
             else if(sel == 2) createNewPrediction(scan);
             else if(sel == 3) updatePrediction(scan);
             else if(sel == 9) break;
+        }
+    }
+
+    private void demo() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            var example  = mapper.readValue(new URL("https://api.funtranslations.com/translate/doge.json?text=Good%20morning"),Example.class);
+            System.out.println(example);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
