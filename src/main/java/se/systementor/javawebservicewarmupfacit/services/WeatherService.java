@@ -6,6 +6,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.stereotype.Service;
 import se.systementor.javawebservicewarmupfacit.models.WeatherPrediction;
 
@@ -23,6 +25,7 @@ import java.util.List;
 public class WeatherService {
     private static List<WeatherPrediction> allPredictions;
 
+
     public WeatherService(){
         if(allPredictions == null) {
             try {
@@ -33,11 +36,13 @@ public class WeatherService {
         }
     }
 
-
+   public List<WeatherPrediction> getAll(){
+        return allPredictions;
+   }
     private List<WeatherPrediction> readFromFile() throws IOException {
-        if(!Files.exists(Path.of("predictions.json"))) return new ArrayList<WeatherPrediction>();
+        if(!Files.exists(Path.of("predictions.xml"))) return new ArrayList<WeatherPrediction>();
         ObjectMapper objectMapper = getObjectMapper();
-        var jsonStr = Files.readString(Path.of("predictions.json"));
+        var jsonStr = Files.readString(Path.of("predictions.xml"));
         return  new ArrayList(Arrays.asList(objectMapper.readValue(jsonStr, WeatherPrediction[].class ) ));
     }
 
@@ -51,23 +56,30 @@ public class WeatherService {
         StringWriter stringWriter = new StringWriter();
         objectMapper.writeValue(stringWriter, weatherPredictions);
 
-        Files.writeString(Path.of("predictions.json"), stringWriter.toString());
+        Files.writeString(Path.of("predictions.xml"), stringWriter.toString());
 
     }
 
 
     private static ObjectMapper getObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        //mapper.registerModule(new JavaTimeModule());
-        /*
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        */
+        ObjectMapper mapper = new XmlMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         return mapper;
     }
 
+    public void add(WeatherPrediction weatherPrediction) throws IOException {
+        allPredictions.add(weatherPrediction);
+        this.writeAllToFile(allPredictions);
+    }
+
+    public void update(WeatherPrediction t) throws IOException {
+        var existing = allPredictions.stream().filter(c->c.getId().equals(t.getId())).findFirst().orElseThrow();
+        existing.setTemperature(t.getTemperature());
+        existing.setDate(t.getDate());
+        existing.setHour(t.getHour());
+        this.writeAllToFile(allPredictions);
+    }
 
 
 //    private List<WeatherPrediction> readFromFile() throws IOException{

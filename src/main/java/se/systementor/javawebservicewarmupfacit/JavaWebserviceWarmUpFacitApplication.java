@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import se.systementor.javawebservicewarmupfacit.models.funtranslations.Example;
+import se.systementor.javawebservicewarmupfacit.services.WeatherService;
 
 @SpringBootApplication
 public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
@@ -23,11 +24,12 @@ public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
         SpringApplication.run(JavaWebserviceWarmUpFacitApplication.class, args);
     }
 
-    private List<WeatherPrediction> predictions = new ArrayList<WeatherPrediction>();
+    private WeatherService weatherService;
 
     @Override
     public void run(String... args) throws Exception {
         demo();
+        weatherService = new WeatherService();
         var scan = new Scanner(System.in);
         while(true){
             showHeaderMenu();
@@ -52,7 +54,7 @@ public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
     }
 
 
-    private void createNewPrediction(Scanner scan) {
+    private void createNewPrediction(Scanner scan) throws IOException {
         System.out.println("*** CREATE PREDICTION ***");
 
         System.out.printf("Ange vilken dag, ex %s:", new SimpleDateFormat("yyyyMMdd").format(new Date()));
@@ -68,29 +70,31 @@ public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
         weatherPrediction.setDate(dag);
         weatherPrediction.setHour(hour);
         weatherPrediction.setTemperature(temp);
-        predictions.add(weatherPrediction);
-        predictions = predictions.stream().sorted((a,b)->b.SortOrder().compareTo(a.SortOrder()))
-                .collect(Collectors.toList());
-    }
+        weatherService.add(weatherPrediction);
+   }
 
-    private void updatePrediction(Scanner scan) {
+    private void updatePrediction(Scanner scan) throws IOException {
         int num = 1;
-        for(var prediction : predictions){
+        var all = weatherService.getAll();
+        for(var prediction : all){
             System.out.printf("%d) %d  Kl %d:00  Temp:%f   %n",num, prediction.getDate(), prediction.getHour(), prediction.getTemperature() );
             num++;
         }
         System.out.print("Select a row number:");
         int sel = Integer.parseInt ( scan.nextLine() );
-        var t = predictions.get(sel-1);
+        var t = all.get(sel-1);
 
         System.out.print("New temperature:");
         int temp = Integer.parseInt ( scan.nextLine() );
 
         t.setTemperature(temp);
+
+        weatherService.update(t);
+
     }
 
     private void listPredictions(Scanner scan) {
-        for(var prediction : predictions){
+        for(var prediction : weatherService.getAll()){
             System.out.printf("%d  Kl %d:00  Temp:%f  %n", prediction.getDate(), prediction.getHour(), prediction.getTemperature() );
         }
 
