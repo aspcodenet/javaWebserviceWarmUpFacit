@@ -1,5 +1,6 @@
 package se.systementor.javawebservicewarmupfacit;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,12 +10,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import se.systementor.javawebservicewarmupfacit.models.funtranslations.Example;
+import se.systementor.javawebservicewarmupfacit.models.xmlrecords.Students;
 import se.systementor.javawebservicewarmupfacit.services.WeatherService;
 
 @SpringBootApplication
@@ -29,6 +28,7 @@ public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         demo();
+        demoXml();
         weatherService = new WeatherService();
         var scan = new Scanner(System.in);
         while(true){
@@ -39,6 +39,17 @@ public class JavaWebserviceWarmUpFacitApplication implements CommandLineRunner {
             else if(sel == 2) createNewPrediction(scan);
             else if(sel == 3) updatePrediction(scan);
             else if(sel == 9) break;
+        }
+    }
+
+    private void demoXml() {
+        ObjectMapper mapper = new XmlMapper();
+        try {
+            var example  = mapper.readValue(new URL("https://axmjqhyyjpat.objectstorage.eu-amsterdam-1.oci.customer-oci.com/n/axmjqhyyjpat/b/externalbucket/o/data-1vdvx7Um7UzezAhpKyNmQ.xml"), Students.class);
+            System.out.println(example);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
